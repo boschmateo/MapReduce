@@ -17,11 +17,11 @@ class Server(object):
     # Mapping can be done in 2 ways:
     #       -CW: counting the number of words
     #       -WC: counting the appearance of each word
-    def map(self, function_to_apply, input_item):
-        if (function_to_apply == 'CW'):
-            countingWords(input_item)
-        elif (function_to_apply == 'WC'):
-            wordCounting(input_item)
+    def map(self, functionToCall, httpAddress):
+        if (functionToCall == 'CW'):
+            countingWords(httpAddress)
+        elif (functionToCall == 'WC'):
+            wordCounting(httpAddress)
 
     # Allows to reduce the input as desired        
     def reduce(self, value):
@@ -35,6 +35,12 @@ class Server(object):
 
 if __name__ == "__main__":
     set_context()
+
+    #Validate the entry argument length
+    numberOfArguments = len(sys.argv)
+    if (numberOfArguments != 2):
+        print "python client.py <number of remote hosts>"
+        exit(-1)
 
     remoteHostList = []
     numberOfSpawns = int(sys.argv[1])

@@ -11,7 +11,7 @@ if __name__ == "__main__":
 	numberOfArguments = len(sys.argv)
     set_context()
 
-    if (numberOfArguments > 1):
+    if (numberOfArguments == 2):
         host = create_host('http://127.0.0.1:'+sys.argv[1]+'/')
         print 'host listening at port '+sys.argv[1]
     else:
