@@ -8,9 +8,10 @@ from pyactor.context import set_context, create_host, serve_forever
 
 if __name__ == "__main__":
 
+	numberOfArguments = len(sys.argv)
     set_context()
 
-    if (len(sys.argv) > 1):
+    if (numberOfArguments > 1):
         host = create_host('http://127.0.0.1:'+sys.argv[1]+'/')
         print 'host listening at port '+sys.argv[1]
     else:

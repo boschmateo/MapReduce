@@ -13,39 +13,50 @@ class Server(object):
     #Asynchronous
     _tell = ['map', 'test']
 
+    #******     METHODS     *********
+    # Allows to map an input file from an HTTP address
+    # Mapping can be done in 2 ways:
+    #       -CW: counting the number of words
+    #       -WC: counting the appearance of each word
     def map(self, function_to_apply, input_item):
         if (function_to_apply == 'CW'):
             countingWords(input_item)
         elif (function_to_apply == 'WC'):
             wordCounting(input_item)
 
-    def test(self, value):
-        print "I am "+str(value)
-
+    # Allows to reduce the input as desired        
     def reduce(self, value):
+        #TODO: Distinguish between CW and WC
         return value
+
+    #Just for testing, this will be deleted
+    def test(self, value):
+        print "I am " + str(value)
 
 
 if __name__ == "__main__":
     set_context()
 
     remoteHostList = []
-    nSpawns=int(sys.argv[1])
+    numberOfSpawns = int(sys.argv[1])
+    MIN_PORT_VALUE = 1277
+    MAX_PORT_VALUE = MIN_PORT_VALUE + numberOfSpawns
 
     host = create_host('http://127.0.0.1:1679')
 
     #Spawn all the
-    for x in range(1277, 1277+nSpawns):
+    for port in range(MIN_PORT_VALUE, MAX_PORT_VALUE):
 
-        print "On port "+str(x)
+        print "On port "+str(port)
         #Get the host reference
-        remoteHost = host.lookup_url('http://127.0.0.1:'+str(x)+'/', Host)
+        remoteHost = host.lookup_url('http://127.0.0.1:' + str(port) + '/', Host)
         #Add the slaves into the list
-        remoteHostList.append(remote_host.spawn(x, 'client/Server'))
+        remoteHostList.append(remote_host.spawn(port, 'client/Server'))
 
     #Testing the values
-    for x in range(nSpawns):
-        remoteHostList[x].test(x)
+    for pos in range(numberOfSpawns):
+        remoteHostList[pos].test(pos)
+    
     
     sleep(3)
     shutdown()
