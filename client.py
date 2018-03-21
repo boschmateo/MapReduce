@@ -13,7 +13,6 @@ class Server(object):
     #Asynchronous
     _tell = ['map', 'test']
 
-    #******     METHODS     *********
     # Allows to map an input file from an HTTP address
     # Mapping can be done in 2 ways:
     #       -CW: counting the number of words
@@ -57,6 +56,6 @@ if __name__ == "__main__":
     for pos in range(numberOfSpawns):
         remoteHostList[pos].test(pos)
     
-    
+
     sleep(3)
     shutdown()
