@@ -3,6 +3,7 @@
 @author: Roger Bosch Mateo
 '''
 import sys
+import urllib2, re
 from pyactor.context import set_context, create_host, Host, sleep, shutdown
 from pyactor.exceptions import TimeoutError
 
@@ -31,6 +32,12 @@ class Server(object):
     #Just for testing, this will be deleted
     def test(self, value):
         print "I am " + str(value)
+
+    #Counting words functions
+    def countingWords(self, address):
+        contents = urllib2.urlopen(address).read()
+        count = len(re.findall(r'\w+', contents))
+        print (count)
 
 
 if __name__ == "__main__":
