@@ -7,37 +7,57 @@ import urllib2, re
 from pyactor.context import set_context, create_host, Host, sleep, shutdown
 from pyactor.exceptions import TimeoutError
 
-
-class Server(object):
-    #Synchronous (return method)
-    _ask = ['reduce']
+class Map(object):
     #Asynchronous
-    _tell = ['map', 'test']
+    _tell = ['map']
+    _ref = ['map']
 
-    # Allows to map an input file from an HTTP address
-    # Mapping can be done in 2 ways:
-    #       -CW: counting the number of words
-    #       -WC: counting the appearance of each word
-    def map(self, functionToCall, httpAddress):
+    reducer = 0
+
+    def map(self, functionToCall, httpAddress, reducer):
+        self.reducer = reducer
         if (functionToCall == 'CW'):
-            countingWords(httpAddress)
+            self.countingWords(httpAddress)
         elif (functionToCall == 'WC'):
-            wordCounting(httpAddress)
-
-    # Allows to reduce the input as desired        
-    def reduce(self, value):
-        #TODO: Distinguish between CW and WC
-        return value
-
-    #Just for testing, this will be deleted
-    def test(self, value):
-        print "I am " + str(value)
+            self.wordCounting(httpAddress)
 
     #Counting words functions
     def countingWords(self, address):
         contents = urllib2.urlopen(address).read()
         count = len(re.findall(r'\w+', contents))
-        print (count)
+        self.reducer.reduce(count)
+
+    def wordCounting(self, address):
+        contents = urllib2.urlopen(address).readlines()
+
+        for line in contents:
+            line = re.sub( r'^\W+|\W+$', '', line )
+            words = re.split( r'\W+', line )
+            for word in words:
+                word = word.lower()
+                print '%s\t%s' % (word, 1)
+
+class Reduce(object):
+    #Asynchronous
+    _tell = ['reduce', 'setNumberOfMappers']
+    nMappers=0
+    totalMappers=0
+    total=0
+
+    def reduce(self, count):
+        self.nMappers = self.nMappers + 1
+        if ( self.nMappers < self.totalMappers):
+            self.total= self.total + count
+        elif (self.nMappers == self.totalMappers):
+            self.total = self.total + count
+            print("The number of chracters is "+str(self.total))
+
+    #This function must be called before starting mapping with the number of mappers
+    def setNumberOfMappers(self, totalMappers):
+        self.total=0
+        self.nMappers=0
+        self.totalMappers=totalMappers
+
 
 
 if __name__ == "__main__":
@@ -56,18 +76,23 @@ if __name__ == "__main__":
 
     host = create_host('http://127.0.0.1:1679')
 
-    #Spawn all the
+    #Spawn the reducer
+    reducerHost = host.lookup_url('http://127.0.0.1:' + str(MAX_PORT_VALUE) + '/', Host)
+    reducer = reducerHost.spawn(MAX_PORT_VALUE, 'client/Reduce')
+    reducer.setNumberOfMappers(numberOfSpawns)
+
+    #Spawn all the mappers
     for port in range(MIN_PORT_VALUE, MAX_PORT_VALUE):
 
         print "On port "+str(port)
         #Get the host reference
         remoteHost = host.lookup_url('http://127.0.0.1:' + str(port) + '/', Host)
         #Add the slaves into the list
-        remoteHostList.append(remote_host.spawn(port, 'client/Server'))
+        remoteHostList.append(remoteHost.spawn(port, 'client/Map'))
 
     #Testing the values
     for pos in range(numberOfSpawns):
-        remoteHostList[pos].test(pos)
+        remoteHostList[pos].map("WC", "http://0.0.0.0:8000/client.py", reducer)
     
 
     sleep(3)
