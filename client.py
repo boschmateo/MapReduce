@@ -4,6 +4,7 @@
 '''
 import sys
 import urllib2, re
+import os.path
 from pyactor.context import set_context, create_host, Host, sleep, shutdown
 from pyactor.exceptions import TimeoutError
 
@@ -12,8 +13,15 @@ class Map(object):
     _tell = ['map']
     _ref = ['map']
 
+    #Reducer actor reference
     reducer = 0
 
+    # Main function that allows to map a file by counting the number of words(CW)
+    # or by counting each word appereance.
+    # Usage:
+    #   functionToCall: "CW" or "WC"
+    #   httpAddress:    Address for the file
+    #   reducer:        reducer actor reference
     def map(self, functionToCall, httpAddress, reducer):
         self.reducer = reducer
         if (functionToCall == 'CW'):
@@ -21,30 +29,45 @@ class Map(object):
         elif (functionToCall == 'WC'):
             self.wordCounting(httpAddress)
 
-    #Counting words functions
+    # Function that counts the number of words in a files
     def countingWords(self, address):
         contents = urllib2.urlopen(address).read()
         count = len(re.findall(r'\w+', contents))
-        self.reducer.reduce(count)
+        self.reducer.reduceCW(count)
 
+    # Function that states the number of times a word appears in a file
     def wordCounting(self, address):
+        #Get the file to read
         contents = urllib2.urlopen(address).readlines()
 
         for line in contents:
             line = re.sub( r'^\W+|\W+$', '', line )
             words = re.split( r'\W+', line )
+
             for word in words:
-                word = word.lower()
-                print '%s\t%s' % (word, 1)
+                self.reducer.reduceWC(word.lower())
+
+        self.reducer.reduceWC("lastWord")
+
 
 class Reduce(object):
     #Asynchronous
-    _tell = ['reduce', 'setNumberOfMappers']
-    nMappers=0
-    totalMappers=0
-    total=0
+    _tell = ['reduceCW', 'reduceWC', 'setNumberOfMappers']
+    _ref = ['setNumberOfMappers']
 
-    def reduce(self, count):
+    mainHost = 0
+
+    #Number of mappers finished
+    nMappers=0
+    #Number of mappers to expect
+    totalMappers=0
+
+    #Total of words for CW
+    total=0
+    #List of words for WC
+    wordCounting = dict()
+
+    def reduceCW(self, count):
         self.nMappers = self.nMappers + 1
         if ( self.nMappers < self.totalMappers):
             self.total= self.total + count
@@ -52,8 +75,26 @@ class Reduce(object):
             self.total = self.total + count
             print("The number of chracters is "+str(self.total))
 
+    def reduceWC(self, word):
+        #If mapper has finished sending words
+        if (word == "lastWord"):
+            self.nMappers = self.nMappers + 1
+        #If it was the last mapper finishing
+        if (self.nMappers == self.totalMappers):
+            outputFie = open("output.txt","w") 
+            for word,count in self.wordCounting.items():
+                outputFie.write(word+": "+str(count)+"\n")
+        else:
+            #If word exists
+            if (self.wordCounting.get(word)):
+                self.wordCounting[word] = self.wordCounting[word] + 1
+            #If it doesn't exist
+            else:
+                self.wordCounting[word] = 1
+
     #This function must be called before starting mapping with the number of mappers
-    def setNumberOfMappers(self, totalMappers):
+    def setNumberOfMappers(self, totalMappers, mainHost):
+        self.mainHost=mainHost
         self.total=0
         self.nMappers=0
         self.totalMappers=totalMappers
@@ -79,7 +120,7 @@ if __name__ == "__main__":
     #Spawn the reducer
     reducerHost = host.lookup_url('http://127.0.0.1:' + str(MAX_PORT_VALUE) + '/', Host)
     reducer = reducerHost.spawn(MAX_PORT_VALUE, 'client/Reduce')
-    reducer.setNumberOfMappers(numberOfSpawns)
+    reducer.setNumberOfMappers(numberOfSpawns, host)
 
     #Spawn all the mappers
     for port in range(MIN_PORT_VALUE, MAX_PORT_VALUE):
@@ -95,5 +136,9 @@ if __name__ == "__main__":
         remoteHostList[pos].map("WC", "http://0.0.0.0:8000/client.py", reducer)
     
 
-    sleep(3)
+    # When the output file is created end the program
+    while os.path.isfile("output.txt"):
+        pass
+
+
     shutdown()
