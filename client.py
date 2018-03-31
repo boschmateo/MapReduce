@@ -2,7 +2,7 @@
 @author: Jeroni Molina Mellado
 @author: Roger Bosch Mateo
 '''
-import sys
+import sys, time
 import urllib2, re
 import os.path
 from pyactor.context import set_context, create_host, Host, sleep, shutdown
@@ -39,7 +39,6 @@ class Map(object):
     def wordCounting(self, address):
         #Get the file to read
         contents = urllib2.urlopen(address).readlines()
-
         for line in contents:
             line = re.sub( r'^\W+|\W+$', '', line )
             words = re.split( r'\W+', line )
@@ -73,7 +72,8 @@ class Reduce(object):
             self.total= self.total + count
         elif (self.nMappers == self.totalMappers):
             self.total = self.total + count
-            print("The number of chracters is "+str(self.total))
+            outputFile = open("output.txt","w")
+            outputFile.write("The number of chracters is "+str(self.total)+"\n")
 
     def reduceWC(self, word):
         #If mapper has finished sending words
@@ -81,9 +81,10 @@ class Reduce(object):
             self.nMappers = self.nMappers + 1
         #If it was the last mapper finishing
         if (self.nMappers == self.totalMappers):
-            outputFie = open("output.txt","w") 
+            outputFile = open("output.txt","w")
             for word,count in self.wordCounting.items():
-                outputFie.write(word+": "+str(count)+"\n")
+                outputFile.write(word+": "+str(count)+"\n")
+            print("FINAL")
         else:
             #If word exists
             if (self.wordCounting.get(word)):
@@ -104,14 +105,29 @@ class Reduce(object):
 if __name__ == "__main__":
     set_context()
 
+    #start execution time
+    start_time = time.time()
+
     #Validate the entry argument length
     numberOfArguments = len(sys.argv)
-    if (numberOfArguments != 2):
-        print "python client.py <number of remote hosts>"
+    if (numberOfArguments != 3):
+        print "python client.py <number of remote hosts> <mode>"
         exit(-1)
+
+    #Check if exists previous output.txt
+    directory=os.getcwd()
+    if (os.path.isfile(directory+"/output.txt")):
+        os.remove(directory+"/output.txt")
 
     remoteHostList = []
     numberOfSpawns = int(sys.argv[1])
+
+    #Check if mode is correct
+    mode = sys.argv[2]
+    if ((mode != "CW") and (mode != "WC")):
+        print "ERROR: Mode has to be CW (counting words) or WC (words count)"
+        exit(-1)
+
     MIN_PORT_VALUE = 1277
     MAX_PORT_VALUE = MIN_PORT_VALUE + numberOfSpawns
 
@@ -133,12 +149,14 @@ if __name__ == "__main__":
 
     #Testing the values
     for pos in range(numberOfSpawns):
-        remoteHostList[pos].map("WC", "http://0.0.0.0:8000/" + str(pos) + ".part", reducer)
+        remoteHostList[pos].map(mode, "http://0.0.0.0:8000/" + str(pos) + ".part", reducer)
     
 
-    # When the output file is created end the program
-    while os.path.isfile("output.txt"):
+    # When the output file is created end the program 
+    while not os.path.isfile(directory+"/output.txt"):
         pass
 
+    #print execution time
+    print("Execution time: %s seconds" % (time.time() - start_time))
 
     shutdown()
