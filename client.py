@@ -133,7 +133,7 @@ if __name__ == "__main__":
 
     #Testing the values
     for pos in range(numberOfSpawns):
-        remoteHostList[pos].map("WC", "http://0.0.0.0:8000/client.py", reducer)
+        remoteHostList[pos].map("WC", "http://0.0.0.0:8000/" + str(pos) + ".part", reducer)
     
 
     # When the output file is created end the program
