@@ -77,7 +77,7 @@ class Reduce(object):
             self.total = self.total + count
             print("The number of chracters is "+str(self.total)+"\n")
             #print execution time
-            print("Execution time: %s seconds" % (time.time() - start_time))
+            print("Execution time: %s seconds" % (time.time() - self.start_time))
 
     def reduceWC(self, word):
         #If mapper has finished sending words
@@ -89,7 +89,7 @@ class Reduce(object):
                 print (word+": "+str(count)+"\n")
             print("FINAL")
             #print execution time
-            print("Execution time: %s seconds" % (time.time() - start_time))
+            print("Execution time: %s seconds" % (time.time() - self.start_time))
         else:
             #If word exists
             if (self.wordCounting.get(word)):
