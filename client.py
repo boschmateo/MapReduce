@@ -15,6 +15,8 @@ class Map(object):
 
     #Reducer actor reference
     reducer = 0
+    #Word count list
+    wordCounting = dict()
 
     # Main function that allows to map a file by counting the number of words(CW)
     # or by counting each word appereance.
@@ -44,9 +46,15 @@ class Map(object):
             words = re.split( r'\W+', line )
 
             for word in words:
-                self.reducer.reduceWC(word.lower())
+            	word=word.lower()
+            	#If word exists
+	            if (self.wordCounting.get(word)):
+	                self.wordCounting[word] = self.wordCounting[word] + 1
+	            #If it doesn't exist
+	            else:
+	                self.wordCounting[word] = 1
 
-        self.reducer.reduceWC("lastWord")
+        self.reducer.reduceWC(self.wordCounting)
 
 
 class Reduce(object):
@@ -77,26 +85,34 @@ class Reduce(object):
             self.total = self.total + count
             print("The number of chracters is "+str(self.total)+"\n")
             #print execution time
-            print("Execution time: %s seconds" % (time.time() - start_time))
+            print("Execution time: %s seconds" % (time.time() - self.start_time))
 
-    def reduceWC(self, word):
-        #If mapper has finished sending words
-        if (word == "lastWord"):
-            self.nMappers = self.nMappers + 1
-        #If it was the last mapper finishing
-        if (self.nMappers == self.totalMappers):
-            for word,count in self.wordCounting.items():
-                print (word+": "+str(count)+"\n")
-            print("FINAL")
+    def reduceWC(self, wordDic):
+        self.nMappers = self.nMappers + 1
+        if ( self.nMappers < self.totalMappers):
+        	for word,count in wordDic.items():
+            	#If word exists
+	            if (self.wordCounting.get(word)):
+	                self.wordCounting[word] = self.wordCounting[word] + count
+	            #If it doesn't exist
+	            else:
+	                self.wordCounting[word] = count
+
+        elif (self.nMappers == self.totalMappers):
+        	for word,count in wordDic.items():
+            	#If word exists
+	            if (self.wordCounting.get(word)):
+	                self.wordCounting[word] = self.wordCounting[word] + count
+	            #If it doesn't exist
+	            else:
+	                self.wordCounting[word] = count
+
+	        for word,count in self.wordCounting.items():
+	        	print (word+": "+str(count))
             #print execution time
-            print("Execution time: %s seconds" % (time.time() - start_time))
-        else:
-            #If word exists
-            if (self.wordCounting.get(word)):
-                self.wordCounting[word] = self.wordCounting[word] + 1
-            #If it doesn't exist
-            else:
-                self.wordCounting[word] = 1
+            print("Execution time: %s seconds" % (time.time() - self.start_time))
+
+
 
     #This function must be called before starting mapping with the number of mappers
     def setNumberOfMappers(self, totalMappers, mainHost, start_time):
