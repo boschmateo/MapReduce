@@ -61,6 +61,9 @@ class Reduce(object):
     #Number of mappers to expect
     totalMappers=0
 
+    #StartTime
+    start_time=0
+
     #Total of words for CW
     total=0
     #List of words for WC
@@ -72,8 +75,9 @@ class Reduce(object):
             self.total= self.total + count
         elif (self.nMappers == self.totalMappers):
             self.total = self.total + count
-            outputFile = open("output.txt","w")
-            outputFile.write("The number of chracters is "+str(self.total)+"\n")
+            print("The number of chracters is "+str(self.total)+"\n")
+            #print execution time
+            print("Execution time: %s seconds" % (time.time() - start_time))
 
     def reduceWC(self, word):
         #If mapper has finished sending words
@@ -81,10 +85,11 @@ class Reduce(object):
             self.nMappers = self.nMappers + 1
         #If it was the last mapper finishing
         if (self.nMappers == self.totalMappers):
-            outputFile = open("output.txt","w")
             for word,count in self.wordCounting.items():
-                outputFile.write(word+": "+str(count)+"\n")
+                print (word+": "+str(count)+"\n")
             print("FINAL")
+            #print execution time
+            print("Execution time: %s seconds" % (time.time() - start_time))
         else:
             #If word exists
             if (self.wordCounting.get(word)):
@@ -94,13 +99,12 @@ class Reduce(object):
                 self.wordCounting[word] = 1
 
     #This function must be called before starting mapping with the number of mappers
-    def setNumberOfMappers(self, totalMappers, mainHost):
+    def setNumberOfMappers(self, totalMappers, mainHost, start_time):
         self.mainHost=mainHost
         self.total=0
         self.nMappers=0
         self.totalMappers=totalMappers
-
-
+        self.start_time=start_time
 
 if __name__ == "__main__":
     set_context()
@@ -113,11 +117,6 @@ if __name__ == "__main__":
     if (numberOfArguments != 3):
         print "python client.py <number of remote hosts> <mode>"
         exit(-1)
-
-    #Check if exists previous output.txt
-    directory=os.getcwd()
-    if (os.path.isfile(directory+"/output.txt")):
-        os.remove(directory+"/output.txt")
 
     remoteHostList = []
     numberOfSpawns = int(sys.argv[1])
@@ -136,7 +135,7 @@ if __name__ == "__main__":
     #Spawn the reducer
     reducerHost = host.lookup_url('http://127.0.0.1:' + str(MAX_PORT_VALUE) + '/', Host)
     reducer = reducerHost.spawn(MAX_PORT_VALUE, 'client/Reduce')
-    reducer.setNumberOfMappers(numberOfSpawns, host)
+    reducer.setNumberOfMappers(numberOfSpawns, host, start_time)
 
     #Spawn all the mappers
     for port in range(MIN_PORT_VALUE, MAX_PORT_VALUE):
@@ -151,12 +150,4 @@ if __name__ == "__main__":
     for pos in range(numberOfSpawns):
         remoteHostList[pos].map(mode, "http://0.0.0.0:8000/" + str(pos) + ".part", reducer)
     
-
-    # When the output file is created end the program 
-    while not os.path.isfile(directory+"/output.txt"):
-        pass
-
-    #print execution time
-    print("Execution time: %s seconds" % (time.time() - start_time))
-
     shutdown()

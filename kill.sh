@@ -5,7 +5,8 @@
 # Script that kills N hosts
 
 pid=$2
-for i in $(seq 1 $1):
+let number=$1+1
+for i in $(seq 1 $number):
 do
 	kill $pid
 	let pid=pid+1
