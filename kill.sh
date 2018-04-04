@@ -6,6 +6,11 @@
 
 pid=$2
 let number=$1+1
+if [ $pid -le 1000];then
+	echo "No reventis el sistema paio..."
+	echo "Usage: ./kill.sh <numberOfHosts> <firstID>"
+fi
+
 for i in $(seq 1 $number):
 do
 	kill $pid

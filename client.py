@@ -87,32 +87,24 @@ class Reduce(object):
             #print execution time
             print("Execution time: %s seconds" % (time.time() - self.start_time))
 
-    def reduceWC(self, wordDic):
-        self.nMappers = self.nMappers + 1
-        if ( self.nMappers < self.totalMappers):
-        	for word,count in wordDic.items():
-            	#If word exists
-	            if (self.wordCounting.get(word)):
-	                self.wordCounting[word] = self.wordCounting[word] + count
-	            #If it doesn't exist
-	            else:
-	                self.wordCounting[word] = count
-
-        elif (self.nMappers == self.totalMappers):
-        	for word,count in wordDic.items():
-            	#If word exists
-	            if (self.wordCounting.get(word)):
-	                self.wordCounting[word] = self.wordCounting[word] + count
-	            #If it doesn't exist
-	            else:
-	                self.wordCounting[word] = count
-
-	        for word,count in self.wordCounting.items():
-	        	print (word+": "+str(count))
+    def reduceWC(self, word):
+        #If mapper has finished sending words
+        if (word == "lastWord"):
+            self.nMappers = self.nMappers + 1
+        #If it was the last mapper finishing
+        if (self.nMappers == self.totalMappers):
+            for word,count in self.wordCounting.items():
+                print (word+": "+str(count)+"\n")
+            print("FINAL")
             #print execution time
             print("Execution time: %s seconds" % (time.time() - self.start_time))
-
-
+        else:
+            #If word exists
+            if (self.wordCounting.get(word)):
+                self.wordCounting[word] = self.wordCounting[word] + 1
+            #If it doesn't exist
+            else:
+                self.wordCounting[word] = 1
 
     #This function must be called before starting mapping with the number of mappers
     def setNumberOfMappers(self, totalMappers, mainHost, start_time):
