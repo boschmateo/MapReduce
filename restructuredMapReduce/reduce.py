@@ -66,9 +66,9 @@ class Reduce(object):
 
 
     #This function must be called before starting mapping with the number of mappers
-    def setNumberOfMappers(self, totalMappers, mainHost, start_time):
+    def setNumberOfMappers(self, totalMappers, mainHost):
         self.mainHost=mainHost
         self.total=0
         self.nMappers=0
         self.totalMappers=totalMappers
-        self.start_time=start_time
+        self.start_time=time.time()
