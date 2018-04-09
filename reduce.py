@@ -11,9 +11,7 @@ from pyactor.exceptions import TimeoutError
 class Reduce(object):
     #Asynchronous
     _tell = ['reduceCW', 'reduceWC', 'setNumberOfMappers']
-    _ref = ['setNumberOfMappers']
 
-    mainHost = 0
 
     #Number of mappers finished
     nMappers=0
@@ -67,8 +65,7 @@ class Reduce(object):
 
 
     #This function must be called before starting mapping with the number of mappers
-    def setNumberOfMappers(self, totalMappers, mainHost):
-        self.mainHost=mainHost
+    def setNumberOfMappers(self, totalMappers):
         self.total=0
         self.nMappers=0
         self.totalMappers=totalMappers
