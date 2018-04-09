@@ -58,10 +58,11 @@ class Reduce(object):
                 else:
                     self.wordCounting[word] = count
 
+            finish_time=time.time()
             for word,count in self.wordCounting.items():
                 print (word+": "+str(count))
             #print execution time
-            print("Execution time: %s seconds" % (time.time() - self.start_time))
+            print("Execution time: %s seconds" % (finish_time - self.start_time))
 
 
 
