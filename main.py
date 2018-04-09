@@ -32,24 +32,20 @@ if __name__ == "__main__":
     MIN_PORT_VALUE = 1277
     MAX_PORT_VALUE = MIN_PORT_VALUE + numberOfSpawns
 
-    host = create_host('http://192.168.1.40:1679')
+    host = create_host('http://192.168.1.37:1679')
 
     #Spawn the reducer
-    reducerHost = host.lookup_url('http://192.168.1.53:' + str(MAX_PORT_VALUE) + '/', Host)
-    reducer = reducerHost.spawn(MAX_PORT_VALUE, 'reduce/Reduce')
+    reducerHost = host.lookup_url('http://192.168.1.37:' + str(1277) + '/', Host)
+    reducer = reducerHost.spawn(1277, 'reduce/Reduce')
     reducer.setNumberOfMappers(numberOfSpawns)
 
-    #Spawn all the mappers
-    for port in range(MIN_PORT_VALUE, MAX_PORT_VALUE):
+    remoteHost = host.lookup_url('http://192.168.1.35:' + str(1278) + '/', Host)
+    remoteHost = host.lookup_url('http://192.168.1.37:' + str(1279) + '/', Host)
 
-        print "On port "+str(port)
-        #Get the host reference
-        remoteHost = host.lookup_url('http://192.168.1.53:' + str(port) + '/', Host)
-        #Add the slaves into the list
-        remoteHostList.append(remoteHost.spawn(port, 'map/Map'))
+    mac1_host = remoteHost.spawn(1278, 'map/Map')
+    me1_host = remoteHost.spawn(1279, 'map/Map')
 
-    #Testing the values
-    for pos in range(numberOfSpawns):
-        remoteHostList[pos].map(mode, "http://192.168.1.40:8000/" + str(pos) + ".part", reducer)
+    mac1_host.map(mode, "http://192.168.1.37:8000/" + str(0) + ".part", reducer)
+    me1_host.map(mode, "http://192.168.1.37:8000/" + str(1) + ".part", reducer)
     
     shutdown()
