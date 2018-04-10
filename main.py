@@ -32,25 +32,27 @@ if __name__ == "__main__":
     MIN_PORT_VALUE = 1277
     MAX_PORT_VALUE = MIN_PORT_VALUE + numberOfSpawns
 
-    host = create_host('http://192.168.1.43:1679')
+    host = create_host('http://192.168.1.33:1679')
 
     #Spawn the reducer
-    reducerHost = host.lookup_url('http://192.168.1.43:' + str(1277) + '/', Host)
+    reducerHost = host.lookup_url('http://192.168.1.33:' + str(1277) + '/', Host)
     reducer = reducerHost.spawn(1277, 'reduce/Reduce')
     reducer.setNumberOfMappers(numberOfSpawns)
 
-    remoteHost = host.lookup_url('http://192.168.1.38:' + str(1278) + '/', Host)
+    remoteHost = host.lookup_url('http://192.168.1.37:' + str(1278) + '/', Host)
     mac1_host = remoteHost.spawn(1278, 'map/Map')
-    remoteHost = host.lookup_url('http://192.168.1.42:' + str(1279) + '/', Host)
-    jero1_host = remoteHost.spawn(1280, 'map/Map')
-    remoteHost = host.lookup_url('http://192.168.1.43:' + str(1280) + '/', Host)
+    remoteHost = host.lookup_url('http://192.168.1.34:' + str(1279) + '/', Host)
+    jero1_host = remoteHost.spawn(1279, 'map/Map')
+    remoteHost = host.lookup_url('http://192.168.1.34:' + str(1280) + '/', Host)
+    jero2_host = remoteHost.spawn(1280, 'map/Map')
+    remoteHost = host.lookup_url('http://192.168.1.33:' + str(1281) + '/', Host)
     me1_host = remoteHost.spawn(1279, 'map/Map')
 
     
-    
 
-    mac1_host.map(mode, "http://192.168.1.43:8000/" + str(0) + ".part", reducer)
-    jero1_host.map(mode, "http://192.168.1.43:8000/" + str(1) + ".part", reducer)
-    me1_host.map(mode, "http://192.168.1.43:8000/" + str(2) + ".part", reducer)
+    mac1_host.map(mode, "http://192.168.1.33:8000/" + str(0) + ".part", reducer)
+    jero1_host.map(mode, "http://192.168.1.33:8000/" + str(1) + ".part", reducer)
+    jero2_host.map(mode, "http://192.168.1.33:8000/" + str(2) + ".part", reducer)  
+    me1_host.map(mode, "http://192.168.1.33:8000/" + str(3) + ".part", reducer)
     
     shutdown()
