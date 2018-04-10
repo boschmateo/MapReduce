@@ -47,6 +47,8 @@ if __name__ == "__main__":
     jero2_host = remoteHost.spawn(1280, 'map/Map')
     remoteHost = host.lookup_url('http://192.168.1.33:' + str(1281) + '/', Host)
     me1_host = remoteHost.spawn(1279, 'map/Map')
+    remoteHost = host.lookup_url('http://192.168.1.37:' + str(1282) + '/', Host)
+    mac2_host = remoteHost.spawn(1282, 'map/Map')
 
     
 
@@ -54,5 +56,6 @@ if __name__ == "__main__":
     jero1_host.map(mode, "http://192.168.1.33:8000/" + str(1) + ".part", reducer)
     jero2_host.map(mode, "http://192.168.1.33:8000/" + str(2) + ".part", reducer)  
     me1_host.map(mode, "http://192.168.1.33:8000/" + str(3) + ".part", reducer)
+    mac2_host.map(mode, "http://192.168.1.33:8000/" + str(4) + ".part", reducer)
     
     shutdown()
