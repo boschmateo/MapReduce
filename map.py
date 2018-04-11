@@ -41,9 +41,9 @@ class Map(object):
     def wordCounting(self, address):
         #Get the file to read
         contents = urllib2.urlopen(address).readlines()
+        contents = contents.decode('utf_8')
         for line in contents:
-            line = re.sub( r'^\W+|\W+$', '', line )
-            words = re.split( r'\W+', line )
+            words = re.compile(r"[a-zA-Z]+").findall(line)
 
             for word in words:
                 word=word.lower()
