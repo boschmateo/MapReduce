@@ -3,3 +3,4 @@ nose-cov
 pep8
 gevent
 pyactor
+codecov
