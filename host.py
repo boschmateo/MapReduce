@@ -12,11 +12,7 @@ if __name__ == "__main__":
     set_context()
 
     if (numberOfArguments == 2):
-        host = create_host('http://192.168.1.40:'+sys.argv[1]+'/')
+        host = create_host('http://127.0.0.1:'+sys.argv[1]+'/')
         print 'host listening at port '+sys.argv[1]
-    else:
-        print "****You are currently only running one host****"
-        host = create_host('http://192.168.1.40:1277/')
-        print 'host listening at port 1277'
     
     serve_forever()
