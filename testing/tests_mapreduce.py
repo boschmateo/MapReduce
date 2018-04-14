@@ -43,6 +43,9 @@ class TestBasic(unittest.TestCase):
         self.mapper1.map("CW", self.LOCALHOST+":8000/0.part", self.reducer)
         self.mapper2.map("CW", self.LOCALHOST+":8000/1.part", self.reducer)
 
+if __name__ == '__main__':
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestBasic)
+    unittest.TextTestRunner(verbosity=2).run(suite)
 
 
 
