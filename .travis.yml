@@ -5,7 +5,7 @@ install:
     - pip install -r requirements.txt
 before_script:
     - ./splitFile.sh books/bible.txt 2
-    - ./startServer.sh
+    - ./startServer.sh&
 script:
     - find ./project -name \*.py -exec pep8 --ignore=E402 {} +
     - coverage run project/test.py
