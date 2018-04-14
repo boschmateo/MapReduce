@@ -12,6 +12,7 @@ class Map(object):
     #Asynchronous
     _tell = ['map']
     _ref = ['map']
+    _ask = ['getCW', 'getWC']
 
     #Reducer actor reference
     reducer = 0
@@ -57,3 +58,9 @@ class Map(object):
                     self.wordDic[word] = 1
 
         self.reducer.reduceWC(self.wordDic)
+
+    def getCW(self):
+        return self.count
+
+    def getWC(self):
+        return self.wordDic

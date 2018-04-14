@@ -11,6 +11,7 @@ from pyactor.exceptions import TimeoutError
 class Reduce(object):
     #Asynchronous
     _tell = ['reduceCW', 'reduceWC', 'setNumberOfMappers']
+    _ask = ['getNumberOfMappers', 'getCW', 'getWC']
 
 
     #Number of mappers finished
@@ -70,3 +71,12 @@ class Reduce(object):
         self.nMappers=0
         self.totalMappers=totalMappers
         self.start_time=time.time()
+
+    def getNumberOfMappers(self):
+        return self.totalMappers
+
+    def getCW(self):
+        return self.total
+
+    def getWC(self):
+        return self.wordCounting
