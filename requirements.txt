@@ -2,3 +2,4 @@ nose
 nose-cov
 pep8
 gevent
+pyactor
