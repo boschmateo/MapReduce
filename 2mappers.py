@@ -8,6 +8,8 @@ import os.path
 from pyactor.context import set_context, create_host, Host, sleep, shutdown
 from pyactor.exceptions import TimeoutError
 from implementation.reduce import Reduce
+from implementation.map import Map
+
 
 if __name__ == "__main__":
     set_context()
@@ -41,13 +43,13 @@ if __name__ == "__main__":
     reducer.setNumberOfMappers(numberOfSpawns)
 
     remoteHost = host.lookup_url(IP_COMPUTER1 +':' + str(1278) + '/', Host)
-    host1 = remoteHost.spawn(1278, 'implementation/map/Map')
+    host1 = remoteHost.spawn(1278, Map)
 
     remoteHost = host.lookup_url(IP_COMPUTER2 +':' + str(1279) + '/', Host)
-    host2 = remoteHost.spawn(1279, 'implementation/map/Map')
+    host2 = remoteHost.spawn(1279, Map)
 
     # 8000 is the default port for the HTTP server
-    host1.map(mode, IP_COMPUTER1+':8000/' + str(0) + ".part", Reduce)
-    host2.map(mode, IP_COMPUTER1+':8000/' + str(1) + ".part", Reduce)
+    host1.map(mode, IP_COMPUTER1+':8000/' + str(0) + ".part", reducer)
+    host2.map(mode, IP_COMPUTER1+':8000/' + str(1) + ".part", reducer)
     
     shutdown()

@@ -32,7 +32,36 @@ class TestBasic(unittest.TestCase):
     def tearDown(self):
         shutdown()
 
-    def test_1countingwords(self):
+    def test_1wordcounting(self):
+        self.reducer.setNumberOfMappers(2)
+        self.assertEqual(self.reducer.getNumberOfMappers(), 2)
+
+        self.mapper1.map("WC", self.LOCALHOST+":8000/0.part", self.reducer)
+        sleep(1)
+        self.map1_dic = self.mapper1.getWC()
+
+        self.mapper2.map("WC", self.LOCALHOST+":8000/1.part", self.reducer)
+        sleep(1)
+        self.map2_dic = self.mapper2.getWC()
+        sleep(3)
+        self.red_dic = self.reducer.getWC()
+
+        
+
+        for word,count in self.red_dic.items():
+            if (self.map1_dic.get(word)):
+                count_map1 = self.map1_dic[word]
+            else:
+                count_map1 = 0
+
+            if (self.map2_dic.get(word)):
+                count_map2 = self.map2_dic[word]
+            else:
+                count_map2 = 0
+            count_final = count_map2 + count_map1
+            self.assertEqual(count, count_final)
+
+    def test_2countingwords(self):
         self.reducer.setNumberOfMappers(2)
         self.assertEqual(self.reducer.getNumberOfMappers(), 2)
         self.assertEqual(self.reducer.getCW(), 0)
@@ -42,6 +71,7 @@ class TestBasic(unittest.TestCase):
         sleep(2)
         self.assertEqual(self.reducer.getCW(), (self.mapper1.getCW() + self.mapper2.getCW()))
 
+    
 
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(TestBasic)
