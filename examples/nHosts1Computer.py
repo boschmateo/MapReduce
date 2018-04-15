@@ -5,14 +5,15 @@
 import sys, time
 import urllib2, re
 import os.path
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from pyactor.context import set_context, create_host, Host, sleep, shutdown
 from pyactor.exceptions import TimeoutError
+from implementation.reduce import Reduce
+from implementation.map import Map
 
 if __name__ == "__main__":
     set_context()
 
-    #start execution time
-    start_time = time.time()
 
     #Validate the entry argument length
     numberOfArguments = len(sys.argv)
@@ -36,7 +37,7 @@ if __name__ == "__main__":
 
     #Spawn the reducer
     reducerHost = host.lookup_url('http://127.0.0.1:' + str(MAX_PORT_VALUE) + '/', Host)
-    reducer = reducerHost.spawn(MAX_PORT_VALUE, 'reduce/Reduce')
+    reducer = reducerHost.spawn(MAX_PORT_VALUE, Reduce)
     reducer.setNumberOfMappers(numberOfSpawns)
 
     #Spawn all the mappers
@@ -46,7 +47,7 @@ if __name__ == "__main__":
         #Get the host reference
         remoteHost = host.lookup_url('http://127.0.0.1:' + str(port) + '/', Host)
         #Add the slaves into the list
-        remoteHostList.append(remoteHost.spawn(port, 'map/Map'))
+        remoteHostList.append(remoteHost.spawn(port, Map))
 
     #Testing the values
     for pos in range(numberOfSpawns):

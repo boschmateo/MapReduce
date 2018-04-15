@@ -5,26 +5,26 @@
 import sys, time
 import urllib2, re
 import os.path
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from pyactor.context import set_context, create_host, Host, sleep, shutdown
 from pyactor.exceptions import TimeoutError
+from implementation.reduce import Reduce
+from implementation.map import Map
+
 
 if __name__ == "__main__":
     set_context()
 
-    #start execution time
-    start_time = time.time()
 
     #Validate the entry argument length
     numberOfArguments = len(sys.argv)
-    if (numberOfArguments != 3):
-        print "python client.py <number of remote hosts> <mode>"
+    if (numberOfArguments != 2):
+        print "python client.py <mode>"
         exit(-1)
 
-    remoteHostList = []
-    numberOfSpawns = int(sys.argv[1])
 
     #Check if mode is correct
-    mode = sys.argv[2]
+    mode = sys.argv[1]
     if ((mode != "CW") and (mode != "WC")):
         print "ERROR: Mode has to be CW (counting words) or WC (words count)"
         exit(-1)
@@ -36,17 +36,25 @@ if __name__ == "__main__":
 
     #Spawn the reducer
     reducerHost = host.lookup_url(IP_COMPUTER1 +':' + str(1277) + '/', Host)
-    reducer = reducerHost.spawn(1277, 'reduce/Reduce')
-    reducer.setNumberOfMappers(numberOfSpawns)
+    reducer = reducerHost.spawn(1277, Reduce)
+    reducer.setNumberOfMappers(4)
 
     remoteHost = host.lookup_url(IP_COMPUTER1 +':' + str(1278) + '/', Host)
-    host1 = remoteHost.spawn(1278, 'map/Map')
+    host1 = remoteHost.spawn(1278, Map)
 
     remoteHost = host.lookup_url(IP_COMPUTER2 +':' + str(1279) + '/', Host)
-    host2 = remoteHost.spawn(1279, 'map/Map')
+    host2 = remoteHost.spawn(1279, Map)
+
+    remoteHost = host.lookup_url(IP_COMPUTER1 +':' + str(1280) + '/', Host)
+    host3 = remoteHost.spawn(1280, Map)
+
+    remoteHost = host.lookup_url(IP_COMPUTER2 +':' + str(1281) + '/', Host)
+    host4 = remoteHost.spawn(1281, Map)
 
     # 8000 is the default port for the HTTP server
     host1.map(mode, IP_COMPUTER1+':8000/' + str(0) + ".part", reducer)
     host2.map(mode, IP_COMPUTER1+':8000/' + str(1) + ".part", reducer)
+    host3.map(mode, IP_COMPUTER1+':8000/' + str(2) + ".part", reducer)
+    host4.map(mode, IP_COMPUTER1+':8000/' + str(3) + ".part", reducer)
     
     shutdown()

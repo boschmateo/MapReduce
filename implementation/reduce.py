@@ -5,12 +5,14 @@
 import sys, time
 import urllib2, re
 import os.path
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from pyactor.context import set_context, create_host, Host, sleep, shutdown
 from pyactor.exceptions import TimeoutError
 
 class Reduce(object):
     #Asynchronous
     _tell = ['reduceCW', 'reduceWC', 'setNumberOfMappers']
+    _ask = ['getNumberOfMappers', 'getCW', 'getWC']
 
 
     #Number of mappers finished
@@ -59,6 +61,7 @@ class Reduce(object):
             finish_time=time.time()
             for word,count in self.wordCounting.items():
                 print (word+": "+str(count))
+
             #print execution time
             print("Execution time: %s seconds" % (finish_time - self.start_time))
 
@@ -66,7 +69,17 @@ class Reduce(object):
 
     #This function must be called before starting mapping with the number of mappers
     def setNumberOfMappers(self, totalMappers):
+        self.wordCounting = dict()
         self.total=0
         self.nMappers=0
         self.totalMappers=totalMappers
         self.start_time=time.time()
+
+    def getNumberOfMappers(self):
+        return self.totalMappers
+
+    def getCW(self):
+        return self.total
+
+    def getWC(self):
+        return self.wordCounting
