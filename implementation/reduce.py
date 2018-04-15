@@ -70,6 +70,7 @@ class Reduce(object):
 
     #This function must be called before starting mapping with the number of mappers
     def setNumberOfMappers(self, totalMappers):
+        self.wordCounting = dict()
         self.total=0
         self.nMappers=0
         self.totalMappers=totalMappers

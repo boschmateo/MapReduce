@@ -30,8 +30,10 @@ class Map(object):
     def map(self, functionToCall, httpAddress, reducer):
         self.reducer = reducer
         if (functionToCall == 'CW'):
+            self.count = 0
             self.countingWords(httpAddress)
         elif (functionToCall == 'WC'):
+            self.wordDic = dict()
             self.wordCounting(httpAddress)
 
     # Function that counts the number of words in a files
