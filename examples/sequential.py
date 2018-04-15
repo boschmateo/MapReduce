@@ -5,6 +5,7 @@
 import sys, time
 import urllib2, re
 import os.path
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from implementation.mapSequential import Map
 from implementation.reduceSequential import Reduce
 
@@ -27,3 +28,5 @@ if __name__ == "__main__":
     reducer.start()
     mapper=Map()
     mapper.map(mode, sys.argv[2], reducer)
+
+   

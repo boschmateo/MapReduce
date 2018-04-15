@@ -5,6 +5,7 @@
 import sys, time
 import urllib2, re
 import os.path
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from pyactor.context import set_context, create_host, Host, sleep, shutdown
 from pyactor.exceptions import TimeoutError
 

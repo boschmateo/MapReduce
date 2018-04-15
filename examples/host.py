@@ -5,6 +5,8 @@
 
 from pyactor.context import set_context, create_host, serve_forever
 import sys
+import os.path
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 if __name__ == "__main__":
 

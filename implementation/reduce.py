@@ -5,6 +5,7 @@
 import sys, time
 import urllib2, re
 import os.path
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from pyactor.context import set_context, create_host, Host, sleep, shutdown
 from pyactor.exceptions import TimeoutError
 
@@ -61,8 +62,6 @@ class Reduce(object):
             for word,count in self.wordCounting.items():
                 print (word+": "+str(count))
 
-            print("hanging "+str(self.wordCounting["hanging"]))
-            print("aijalon "+str(self.wordCounting["aijalon"]))
             #print execution time
             print("Execution time: %s seconds" % (finish_time - self.start_time))
 

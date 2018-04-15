@@ -5,17 +5,15 @@
 import sys, time
 import urllib2, re
 import os.path
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from pyactor.context import set_context, create_host, Host, sleep, shutdown
 from pyactor.exceptions import TimeoutError
 from implementation.reduce import Reduce
 from implementation.map import Map
 
-
 if __name__ == "__main__":
     set_context()
 
-    #start execution time
-    start_time = time.time()
 
     #Validate the entry argument length
     numberOfArguments = len(sys.argv)
@@ -32,24 +30,27 @@ if __name__ == "__main__":
         print "ERROR: Mode has to be CW (counting words) or WC (words count)"
         exit(-1)
 
-    IP_COMPUTER1="http://127.0.0.1"
-    IP_COMPUTER2="http://127.0.0.1"
+    MIN_PORT_VALUE = 1277
+    MAX_PORT_VALUE = MIN_PORT_VALUE + numberOfSpawns
 
-    host = create_host(IP_COMPUTER1+':1679')
+    host = create_host('http://127.0.0.1:1679')
 
     #Spawn the reducer
-    reducerHost = host.lookup_url(IP_COMPUTER1 +':' + str(1277) + '/', Host)
-    reducer = reducerHost.spawn(1277, Reduce)
+    reducerHost = host.lookup_url('http://127.0.0.1:' + str(MAX_PORT_VALUE) + '/', Host)
+    reducer = reducerHost.spawn(MAX_PORT_VALUE, Reduce)
     reducer.setNumberOfMappers(numberOfSpawns)
 
-    remoteHost = host.lookup_url(IP_COMPUTER1 +':' + str(1278) + '/', Host)
-    host1 = remoteHost.spawn(1278, Map)
+    #Spawn all the mappers
+    for port in range(MIN_PORT_VALUE, MAX_PORT_VALUE):
 
-    remoteHost = host.lookup_url(IP_COMPUTER2 +':' + str(1279) + '/', Host)
-    host2 = remoteHost.spawn(1279, Map)
+        print "On port "+str(port)
+        #Get the host reference
+        remoteHost = host.lookup_url('http://127.0.0.1:' + str(port) + '/', Host)
+        #Add the slaves into the list
+        remoteHostList.append(remoteHost.spawn(port, Map))
 
-    # 8000 is the default port for the HTTP server
-    host1.map(mode, IP_COMPUTER1+':8000/' + str(0) + ".part", reducer)
-    host2.map(mode, IP_COMPUTER1+':8000/' + str(1) + ".part", reducer)
+    #Testing the values
+    for pos in range(numberOfSpawns):
+        remoteHostList[pos].map(mode, "http://127.0.0.1:8000/" + str(pos) + ".part", reducer)
     
     shutdown()
