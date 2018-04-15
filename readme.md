@@ -1,6 +1,6 @@
 # Map reduce with PyActor
 
-[![Build Status](https://travis-ci.org/boschmateo/MapReduce.svg?branch=master)](https://travis-ci.org/boschmateo/MapReduce) [![codecov](https://codecov.io/gh/boschmateo/MapReduce/branch/master/graph/badge.svg)](https://codecov.io/gh/boschmateo/MapReduce)
+[![Build Status](https://travis-ci.org/boschmateo/MapReduce.svg?branch=master)](https://travis-ci.org/boschmateo/MapReduce) [![codecov](https://codecov.io/gh/boschmateo/MapReduce/branch/master/graph/badge.svg)](https://codecov.io/gh/boschmateo/MapReduce) [![codebeat badge](https://codebeat.co/badges/f6ec18b8-c5b5-4434-b0f9-f8d4271cb997)](https://codebeat.co/projects/github-com-boschmateo-mapreduce-master)
 
 This project allows you to use a simplified prototype of the **MapReduce** model in python using [PyActor](https://github.com/pedrotgn/pyactor), *the minimalisistic python actor middleware*.
 
