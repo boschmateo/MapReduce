@@ -15,12 +15,14 @@ class Reduce(object):
     #List of words for WC
     wordCounting = dict()
 
+    # Function that obtain the results of the mappers, sum them and print it.
     def reduceCW(self, count):
         self.total = self.total + count
         print("The number of chracters is "+str(self.total)+"\n")
         #print execution time
         print("Execution time: %s seconds" % (time.time() - self.start_time))
 
+    # Function that obtain the dictionaries of the mappers, agroup them and print the result.
     def reduceWC(self, wordDic):
         for word,count in wordDic.items():
             #If word exists
@@ -44,8 +46,10 @@ class Reduce(object):
         self.total=0
         self.start_time=time.time()
 
+    # Getter of the total number of words
     def getCW(self):
         return self.total
 
+    # Getter of the final dictionary
     def getWC(self):
         return self.wordCounting

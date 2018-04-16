@@ -14,6 +14,12 @@ class Map(object):
     #Word count list
     wordDic = dict()
 
+    # Main function that allows to map a file seqcuentally by counting the number of words(CW)
+    # or by counting each word appereance.
+    # Usage:
+    #   functionToCall: "CW" or "WC"
+    #   fileToRead:     Directory of the file
+    #   reducer:        reducer actor reference
     def map(self, functionToCall, fileToRead, reducer):
         file = open(fileToRead, "r")
         self.reducer = reducer
@@ -22,7 +28,7 @@ class Map(object):
         elif (functionToCall == 'WC'):
             self.wordCounting(file.read())
 
-    # Function that counts the number of words in a files
+    # Function that counts the number of words in a file
     def countingWords(self, inputData):
         count = len(re.findall(r'\w+', inputData))
         self.reducer.reduceCW(count)
@@ -43,8 +49,9 @@ class Map(object):
                 self.wordDic[word] = 1
         self.reducer.reduceWC(self.wordDic)
 
+    # Getter of the number of words
     def getCW(self):
         return self.count
-
+    # Getter of the dictionary
     def getWC(self):
         return self.wordDic

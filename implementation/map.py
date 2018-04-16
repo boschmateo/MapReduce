@@ -63,8 +63,10 @@ class Map(object):
     
         self.reducer.reduceWC(self.wordDic)
 
+    # Getter of the number of words
     def getCW(self):
         return self.count
 
+    # Getter of the dictionary
     def getWC(self):
         return self.wordDic

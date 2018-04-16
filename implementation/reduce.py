@@ -28,6 +28,7 @@ class Reduce(object):
     #List of words for WC
     wordCounting = dict()
 
+    # Function that obtain the results of the mappers, sum them and print it.
     def reduceCW(self, count):
         self.nMappers = self.nMappers + 1
         if ( self.nMappers < self.totalMappers):
@@ -38,6 +39,7 @@ class Reduce(object):
             #print execution time
             print("Execution time: %s seconds" % (time.time() - self.start_time))
 
+    # Function that obtain the dictionaries of the mappers, agroup them and print the result.
     def reduceWC(self, wordDic):
         self.nMappers = self.nMappers + 1
         if ( self.nMappers < self.totalMappers):
@@ -66,8 +68,8 @@ class Reduce(object):
             print("Execution time: %s seconds" % (finish_time - self.start_time))
 
 
-
-    #This function must be called before starting mapping with the number of mappers
+    # Function that initialitate the reduce
+    # This function must be called before starting mapping with the number of mappers
     def setNumberOfMappers(self, totalMappers):
         self.wordCounting = dict()
         self.total=0
@@ -75,11 +77,14 @@ class Reduce(object):
         self.totalMappers=totalMappers
         self.start_time=time.time()
 
+    # Getter of the number of mappers
     def getNumberOfMappers(self):
         return self.totalMappers
 
+    # Getter of the total number of words
     def getCW(self):
         return self.total
 
+    # Getter of the final dictionary
     def getWC(self):
         return self.wordCounting
