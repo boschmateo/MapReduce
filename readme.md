@@ -74,3 +74,9 @@ We will pas the reference of the reducer to the mappers. When they finish they w
 When the reducer is finished processing the data it will output the CW or WC alongside the time it took to do so.
 
 The examples directory contains more example files for doing so with 2,3,4 or 5 mappers.
+
+
+
+#Documentation
+
+You can read the full documentation (Catalan) in `documentacio.pdf` for more insight in the architecture, implementation and validation with speedups.
