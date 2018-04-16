@@ -9,7 +9,7 @@ setup(
     url='https://github.com/pedrotgn/pyactor',
     license='GNU',
     description='The minimalistic Python Actor middleware',
-    long_description=open('README.rst').read(),
+    long_description=open('readme.md').read(),
     install_requires=['gevent==1.2.2'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
