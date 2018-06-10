@@ -1,5 +1,4 @@
 '''
-@author: Jeroni Molina Mellado
 @author: Roger Bosch Mateo
 '''
 import sys, time
@@ -9,10 +8,44 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from pyactor.context import set_context, create_host, Host, sleep, shutdown
 from pyactor.exceptions import TimeoutError
 
+class Map(object):
+    #Asynchronous
+    _tell = ['map']
+    _ref = ['map']
+    _ask = ['getResult']
+
+    #Word count list
+    wordDic = dict()
+
+    # Function that states the number of times a word appears in a file
+    def map(self, address, reducer):
+        #Get the file to read
+        contents = urllib2.urlopen(address).readlines()
+        for line in contents:
+            line = line.decode('utf_8')
+            words = re.compile(r"[a-zA-Z]+").findall(line)
+
+            for word in words:
+                word=word.lower()
+                #If word exists
+                if (self.wordDic.get(word)):
+                    self.wordDic[word] = self.wordDic[word] + 1
+                #If it doesn't exist
+                else:
+                    self.wordDic[word] = 1
+    
+        reducer.reduceWC(self.wordDic)
+
+    # Getter of the number of words
+    def getResult(self):
+        return self.wordDic
+
+        
+
 class Reduce(object):
     #Asynchronous
-    _tell = ['reduceCW', 'reduceWC', 'setNumberOfMappers']
-    _ask = ['getNumberOfMappers', 'getCW', 'getWC']
+    _tell = ['reduce', 'setNumberOfMappers']
+    _ask = ['getNumberOfMappers', 'getResult']
 
 
     #Number of mappers finished
@@ -23,21 +56,8 @@ class Reduce(object):
     #StartTime
     start_time=0
 
-    #Total of words for CW
-    total=0
     #List of words for WC
     wordCounting = dict()
-
-    # Function that obtain the results of the mappers, sum them and print it.
-    def reduceCW(self, count):
-        self.nMappers = self.nMappers + 1
-        if ( self.nMappers < self.totalMappers):
-            self.total= self.total + count
-        elif (self.nMappers == self.totalMappers):
-            self.total = self.total + count
-            print("The number of chracters is "+str(self.total)+"\n")
-            #print execution time
-            print("Execution time: %s seconds" % (time.time() - self.start_time))
 
     # Function that obtain the dictionaries of the mappers, agroup them and print the result.
     def reduceWC(self, wordDic):
@@ -72,7 +92,6 @@ class Reduce(object):
     # This function must be called before starting mapping with the number of mappers
     def setNumberOfMappers(self, totalMappers):
         self.wordCounting = dict()
-        self.total=0
         self.nMappers=0
         self.totalMappers=totalMappers
         self.start_time=time.time()
@@ -81,10 +100,6 @@ class Reduce(object):
     def getNumberOfMappers(self):
         return self.totalMappers
 
-    # Getter of the total number of words
-    def getCW(self):
-        return self.total
-
     # Getter of the final dictionary
-    def getWC(self):
+    def getResult(self):
         return self.wordCounting
