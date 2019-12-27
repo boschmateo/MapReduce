@@ -1,2 +1,4 @@
 *.pyc
 *.part
+
+.DS_Store
