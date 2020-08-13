@@ -15,7 +15,7 @@ In both cases it will also show the time it took to process all the data.
 This projects uses the library PyActor which you can install using:
 
     pip install pyactor
-Otherwise you just can clone this repoitory and install everything using:
+Otherwise you just can clone this repository and install everything using:
 
     python setup.py install
 
